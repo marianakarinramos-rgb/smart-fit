@@ -4,11 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#FF7E7E">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Smart-Fit">
-    
-    <title>Smart-Fit | Business Suite</title>
+    <title>Smart-Fit | Business Suite B2B</title>
     
     <!-- SheetJS para Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -31,7 +27,13 @@
         body { 
             background-color: var(--bg-light); color: var(--text-main); line-height: 1.4; padding-bottom: 90px;
             max-width: 500px; margin: 0 auto; min-height: 100vh; position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.05);
-            overflow-x: hidden;
+            overflow-x: hidden; transition: max-width 0.3s ease;
+        }
+
+        /* Clase para expandir el cuerpo cuando estamos en el panel de admin */
+        body.admin-mode {
+            max-width: 950px !important;
+            background-color: #F8FAFC !important;
         }
 
         .demo-banner {
@@ -41,16 +43,16 @@
 
         /* Pantalla Login por DNI / Socio */
         #userSelector {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100vh; 
             background: var(--bg-light); z-index: 1000; display: flex; 
             flex-direction: column; align-items: center; justify-content: center; padding: 30px;
         }
         
         .login-card {
-            background: var(--surface); width: 100%; padding: 32px 24px; border-radius: var(--radius-lg);
+            background: var(--surface); width: 100%; max-width: 400px; padding: 32px 24px; border-radius: var(--radius-lg);
             box-shadow: var(--shadow); text-align: center; border: 2px solid rgba(255,126,126,0.1);
         }
-        .login-card h2 { font-size: 24px; font-weight: 900; color: var(--primary); margin-bottom: 8px; }
+        .login-card h2 { font-size: 26px; font-weight: 900; color: var(--primary); margin-bottom: 8px; }
         .login-card p { font-size: 13px; color: var(--text-muted); font-weight: 600; margin-bottom: 24px; }
         
         .dni-input {
@@ -72,14 +74,23 @@
             font-size: 13px; font-weight: 800; cursor: pointer; text-decoration: underline;
         }
 
-        /* Panel Admin Dinámico */
-        #adminPanel { display: none; padding: 20px; background: var(--bg-light); min-height: 100vh; position: absolute; width: 100%; z-index: 1500; top: 0; left: 0;}
-        .admin-card { background: var(--surface); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 16px; box-shadow: var(--shadow); }
-        .admin-card h3 { font-size: 18px; font-weight: 900; color: var(--primary); margin-bottom: 12px; }
-        .member-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #F9F9F9; }
+        /* Panel Admin Amplio (Desktop Friendly) */
+        #adminPanel { display: none; padding: 30px; min-height: 100vh; position: absolute; width: 100%; z-index: 1500; top: 0; left: 0;}
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media(max-width: 768px) { .admin-grid { grid-template-columns: 1fr; } }
+        
+        .admin-card { background: var(--surface); border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow); margin-bottom: 20px;}
+        .admin-card h3 { font-size: 18px; font-weight: 900; color: var(--primary); margin-bottom: 16px; }
+        
+        .member-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .member-table th { background: #FFF5F5; color: var(--primary); font-size: 12px; text-transform: uppercase; padding: 10px; text-align: left; font-weight: 900; border-bottom: 2px solid #FFD6D6; }
+        .member-table td { padding: 12px 10px; font-size: 14px; font-weight: 700; border-bottom: 1px solid #F1F5F9; color: var(--text-main); }
         .member-select { padding: 6px 10px; border-radius: 10px; border: 2px solid #FFD6D6; font-weight: 800; color: var(--primary); background: #FFF5F5; outline: none; font-size: 13px;}
 
-        /* App Core */
+        .btn-excel-admin { background: #E3F2FD; color: #1976D2; border: none; padding: 12px 18px; border-radius: 14px; font-weight: 900; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; margin-right: 10px; margin-bottom: 10px;}
+        .btn-excel-admin.up { background: #E8F5E9; color: #388E3C; }
+
+        /* App Core Socio */
         .app-view { display: none; animation: fadeIn 0.4s ease; }
         .app-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -110,7 +121,7 @@
         .routine-container { display: none; padding: 0 20px; }
         .routine-container.active { display: block; }
         
-        .back-btn { background: #FFF0F0; color: var(--primary); border: none; font-size: 14px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 99px; margin: 20px 0;}
+        .back-btn { background: #FFF0F0; color: var(--primary); border: none; font-size: 14px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 99px;}
         .day-title { font-size: 30px; font-weight: 900; color: var(--primary); margin-bottom: 20px;}
 
         .exercise-item { 
@@ -145,40 +156,76 @@
 </head>
 <body>
 
-    <div class="demo-banner">🔒 Smart-Fit SaaS Architecture - Demo Comercial</div>
+    <div class="demo-banner">🔒 Smart-Fit Business Suite - Panel de Recepción y Control B2B</div>
 
-    <!-- PANTALLA LOGIN POR DNI -->
+    <!-- PANTALLA LOGIN SOCIO -->
     <div id="userSelector">
         <div class="login-card">
             <h2>Smart-Fit 🏋️‍♀️</h2>
-            <p>Ingresá tu DNI o N° de Socio para entrenar</p>
+            <p>Ingresá tu DNI o N° de Socio</p>
             <input type="number" id="dniInput" class="dni-input" placeholder="Ej: 35444555" pattern="[0-9]*">
-            <button class="btn-login" onclick="loginByDni()">Ingresar al Sistema 🚀</button>
+            <button class="btn-login" onclick="loginByDni()">Ingresar a Entrenar 🚀</button>
         </div>
-        <button class="admin-login-link" onclick="openAdminPanel()">🔐 Acceso Dueño / Profesor (Gym)</button>
+        <button class="admin-login-link" onclick="openAdminPanel()">🔐 Acceso Recepción / Dueño (Panel Admin)</button>
     </div>
 
-    <!-- PANEL ADMIN DINÁMICO -->
+    <!-- PANEL ADMIN ANCHO (DESKTOP FRIENDLY) -->
     <div id="adminPanel">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 style="color: var(--primary); font-weight: 900;">Panel del Gimnasio 🏢</h2>
-            <button class="back-btn" style="margin:0; padding: 8px 16px;" onclick="closeAdminPanel()">← Volver</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; background: white; padding: 20px 30px; border-radius: 20px; box-shadow: var(--shadow);">
+            <div>
+                <h2 style="color: var(--primary); font-weight: 900; font-size: 24px;">🏢 Panel General del Gimnasio</h2>
+                <p style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Gestión de socios, fichas médicas y asignación masiva de niveles.</p>
+            </div>
+            <button class="back-btn" onclick="closeAdminPanel()">← Volver al Sistema</button>
         </div>
 
-        <div class="admin-card">
-            <h3>👥 Base de Socios Activos</h3>
-            <div id="memberListAdmin"></div>
-            
-            <div style="margin-top: 20px; border-top: 2px dashed #FFE0E0; padding-top: 16px;">
-                <h3 style="font-size:15px; margin-bottom: 8px;">➕ Dar de alta socio nuevo</h3>
-                <input type="text" id="newMemberName" class="dni-input" placeholder="Nombre y Apellido" style="font-size: 14px; padding: 10px; margin-bottom: 8px;">
-                <input type="number" id="newMemberDni" class="dni-input" placeholder="DNI del Socio" style="font-size: 14px; padding: 10px; margin-bottom: 8px;">
-                <button class="btn-login" style="padding: 10px; font-size: 14px;" onclick="addNewMember()">Registrar Socio 📝</button>
+        <div class="admin-grid">
+            <!-- COLUMNA 1: GESTIÓN DE SOCIOS Y NIVELES -->
+            <div class="admin-card">
+                <h3>👥 Padrón de Socios y Niveles</h3>
+                <div style="overflow-x: auto;">
+                    <table class="member-table">
+                        <thead>
+                            <tr>
+                                <th>Socio</th>
+                                <th>DNI / Ficha</th>
+                                <th>Nivel Plan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="memberTableBody"></tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: 24px; border-top: 2px dashed #FFE0E0; padding-top: 20px;">
+                    <h3 style="font-size:15px; margin-bottom: 12px;">➕ Dar de alta socio individual</h3>
+                    <input type="text" id="newMemberName" class="dni-input" placeholder="Nombre y Apellido" style="font-size: 14px; padding: 12px; margin-bottom: 8px; text-align: left;">
+                    <input type="number" id="newMemberDni" class="dni-input" placeholder="DNI del Socio" style="font-size: 14px; padding: 12px; margin-bottom: 12px; text-align: left;">
+                    <button class="btn-login" style="padding: 12px; font-size: 14px;" onclick="addNewMember()">Registrar Socio Manualmente 📝</button>
+                </div>
+            </div>
+
+            <!-- COLUMNA 2: IMPORTACIÓN MASIVA EXCEL (FICHA MÉDICA Y SOCIOS) -->
+            <div class="admin-card">
+                <h3>📊 Importación Masiva por Excel (Ficha Médica)</h3>
+                <p style="font-size: 13px; color: var(--text-muted); font-weight: 600; margin-bottom: 16px;">
+                    Cargá todos los datos de los socios de golpe (incluyendo grupo sanguíneo, emergencias y patologías médicas relevadas en la inscripción).
+                </p>
+                
+                <button class="btn-excel-admin" onclick="downloadSociosTemplate()">📥 Descargar Plantilla Excel</button>
+                <button class="btn-excel-admin up" onclick="document.getElementById('excelSociosInput').click()">⬆️ Subir Excel de Socios</button>
+                <input type="file" id="excelSociosInput" accept=".xlsx" style="display:none;" onchange="importSociosExcel(event)">
+
+                <div style="margin-top: 24px; background: #FFF9F9; border: 2px solid #FFD6D6; border-radius: 16px; padding: 16px;">
+                    <strong style="font-size: 13px; color: var(--primary); display: block; margin-bottom: 4px;">ℹ️ Nota legal para el gimnasio:</strong>
+                    <p style="font-size: 12px; color: var(--text-main); font-weight: 600;">
+                        La planilla procesa automáticamente campos de Declaración Jurada (Alergias, Operaciones, Contacto de Emergencia y Grupo Sanguíneo) para cumplir con las normativas de seguro del establecimiento.
+                    </p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- APP PRINCIPAL -->
+    <!-- APP PRINCIPAL SOCIO -->
     <div id="mainApp" style="display: none;">
         
         <div class="header">
@@ -188,7 +235,7 @@
                     <p id="userLevelBadge">PLAN NIVEL 1</p>
                 </div>
             </div>
-            <button class="back-btn" style="margin:0; padding: 6px 12px; font-size: 12px;" onclick="logout()">Cambiar Socio</button>
+            <button class="back-btn" style="padding: 6px 12px; font-size: 12px;" onclick="logout()">Cambiar Socio</button>
         </div>
 
         <!-- TAB RUTINA -->
@@ -203,13 +250,13 @@
 
                 <div class="sales-box">
                     <h3>¿Te interesa este software para tu gym? 💼</h3>
-                    <p>Ideal para automatizar rutinas por DNI y fidelizar socios sin complicaciones.</p>
+                    <p>Ideal para automatizar fichas médicas por DNI y gestión completa de socios.</p>
                     <button class="btn-buy" onclick="alert('¡Contactá al desarrollador para adquirir tu licencia comercial corporativa!')">💬 Cotizar Licencia B2B</button>
                 </div>
             </div>
 
             <div id="workoutView" class="routine-container">
-                <button class="back-btn" onclick="goHome()">← Volver a Días</button>
+                <button class="back-btn" onclick="goHome()" style="margin: 20px 0;">← Volver a Días</button>
                 <h2 class="day-title" id="currentDayTitle">Día X</h2>
                 <div id="exerciseList"></div>
             </div>
@@ -217,16 +264,16 @@
 
         <div class="bottom-nav">
             <div class="nav-item" onclick="logout()">🚪 Cerrar Sesión</div>
-            <div class="nav-item" onclick="alert('Módulo B2B Activo - Smart-Fit')">ℹ️ Soporte</div>
+            <div class="nav-item" onclick="alert('Smart-Fit Business Suite - Todos los derechos reservados')">ℹ️ Soporte Gym</div>
         </div>
     </div>
 
     <script>
-        // Base de datos simulada en memoria para la Demo B2B
+        // Base de datos de socios enriquecida con Ficha Médica
         let gymDatabase = {
-            "35444555": { name: "Carlos Pérez", level: 1 },
-            "28999888": { name: "Lucía Gómez", level: 2 },
-            "40111222": { name: "Marcos Maidana", level: 3 }
+            "35444555": { name: "Carlos Pérez", level: 1, grupoSanguineo: "O+", emergencia: "María Pérez (11-4455-6677)", observaciones: "Ninguna" },
+            "28999888": { name: "Lucía Gómez", level: 2, grupoSanguineo: "A+", emergencia: "Juan Gómez (11-9988-7766)", observaciones: "Operación de rodilla 2024" },
+            "40111222": { name: "Marcos Maidana", level: 3, grupoSanguineo: "B+", emergencia: "Ana Maidana (11-1234-5678)", observaciones: "Asmático leve" }
         };
 
         const rutinasPorNivel = {
@@ -247,7 +294,6 @@
         };
 
         let currentSocio = null;
-        let currentDayPlan = 1;
 
         function loginByDni() {
             const dni = document.getElementById('dniInput').value.trim();
@@ -257,9 +303,9 @@
                 currentSocio = { dni, ...gymDatabase[dni] };
                 startAppForSocio();
             } else {
-                const name = prompt("DNI no registrado en el gimnasio. Ingresá el Nombre y Apellido para darlo de alta:");
+                const name = prompt("DNI no registrado. Ingresá el Nombre y Apellido del socio:");
                 if(name) {
-                    gymDatabase[dni] = { name: name, level: 1 };
+                    gymDatabase[dni] = { name: name, level: 1, grupoSanguineo: "N/D", emergencia: "N/D", observaciones: "Ninguna" };
                     currentSocio = { dni, ...gymDatabase[dni] };
                     startAppForSocio();
                 }
@@ -282,9 +328,10 @@
         }
 
         function openAdminPanel() {
-            const pass = prompt("Contraseña de Profesor / Dueño:");
+            const pass = prompt("Contraseña de Recepción / Dueño:");
             if(pass === "admin123" || pass === "1234") {
                 document.getElementById('userSelector').style.display = 'none';
+                document.body.classList.add('admin-mode');
                 renderAdminMembers();
                 document.getElementById('adminPanel').style.display = 'block';
             } else if(pass !== null) {
@@ -294,33 +341,36 @@
 
         function closeAdminPanel() {
             document.getElementById('adminPanel').style.display = 'none';
+            document.body.classList.remove('admin-mode');
             document.getElementById('userSelector').style.display = 'flex';
         }
 
         function renderAdminMembers() {
-            const container = document.getElementById('memberListAdmin');
-            container.innerHTML = Object.keys(gymDatabase).map(dni => {
+            const tbody = document.getElementById('memberTableBody');
+            tbody.innerHTML = Object.keys(gymDatabase).map(dni => {
                 const soc = gymDatabase[dni];
                 return `
-                    <div class="member-row">
-                        <div>
-                            <strong style="font-size:14px; color:var(--text-main);">${soc.name}</strong><br>
-                            <span style="font-size:11px; color:var(--text-muted);">DNI: ${dni}</span>
-                        </div>
-                        <select class="member-select" onchange="updateSocioLevel('${dni}', this.value)">
-                            <option value="1" ${soc.level==1?'selected':''}>Nivel 1</option>
-                            <option value="2" ${soc.level==2?'selected':''}>Nivel 2</option>
-                            <option value="3" ${soc.level==3?'selected':''}>Nivel 3</option>
-                            <option value="4" ${soc.level==4?'selected':''}>Nivel 4</option>
-                        </select>
-                    </div>
+                    <tr>
+                        <td>
+                            <strong>${soc.name}</strong><br>
+                            <span style="font-size:11px; color:var(--text-muted);">Sangre: ${soc.grupoSanguineo} | Emergencia: ${soc.emergencia}</span>
+                        </td>
+                        <td>${dni}</td>
+                        <td>
+                            <select class="member-select" onchange="updateSocioLevel('${dni}', this.value)">
+                                <option value="1" ${soc.level==1?'selected':''}>Nivel 1</option>
+                                <option value="2" ${soc.level==2?'selected':''}>Nivel 2</option>
+                                <option value="3" ${soc.level==3?'selected':''}>Nivel 3</option>
+                                <option value="4" ${soc.level==4?'selected':''}>Nivel 4</option>
+                            </select>
+                        </td>
+                    </tr>
                 `;
             }).join('');
         }
 
         function updateSocioLevel(dni, newLevel) {
             gymDatabase[dni].level = parseInt(newLevel);
-            alert("¡Nivel actualizado con éxito!");
         }
 
         function addNewMember() {
@@ -328,17 +378,56 @@
             const dni = document.getElementById('newMemberDni').value.trim();
             if(!name || !dni) return alert("Completá ambos campos.");
             
-            gymDatabase[dni] = { name: name, level: 1 };
+            gymDatabase[dni] = { name: name, level: 1, grupoSanguineo: "S/D", emergencia: "S/D", observaciones: "S/D" };
             document.getElementById('newMemberName').value = '';
             document.getElementById('newMemberDni').value = '';
             renderAdminMembers();
             alert("¡Socio registrado con éxito!");
         }
 
+        function downloadSociosTemplate() {
+            let data = [
+                { DNI: "35444555", "Nombre y Apellido": "Carlos Pérez", Nivel: 1, "Grupo Sanguineo": "O+", "Contacto Emergencia": "María (11445566)", Patologias: "Ninguna" }
+            ];
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Socios_FichaMedica");
+            XLSX.writeFile(wb, `Plantilla_Socios_Gym.xlsx`);
+        }
+
+        function importSociosExcel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+                
+                let count = 0;
+                json.forEach(row => {
+                    const dni = String(row.DNI || row.dni || "").trim();
+                    const nombre = row["Nombre y Apellido"] || row.Nombre || "Sin Nombre";
+                    const nivel = parseInt(row.Nivel) || 1;
+                    const sangre = row["Grupo Sanguineo"] || "N/D";
+                    const emerg = row["Contacto Emergencia"] || "N/D";
+                    const pato = row.Patologias || "Ninguna";
+
+                    if(dni) {
+                        gymDatabase[dni] = { name: nombre, level: nivel, grupoSanguineo: sangre, emergencia: emerg, observaciones: pato };
+                        count++;
+                    }
+                });
+
+                renderAdminMembers();
+                alert(`¡Se importaron ${count} socios con sus fichas médicas con éxito! 📊🚀`);
+            };
+            reader.readAsArrayBuffer(file);
+            event.target.value = '';
+        }
+
         function openDay(dayNum) {
-            currentDayPlan = dayNum;
             const planData = rutinasPorNivel[currentSocio.level] || rutinasPorNivel[1];
-            
             document.getElementById('currentDayTitle').textContent = `${planData.title} - Día ${dayNum}`;
             
             const list = document.getElementById('exerciseList');
