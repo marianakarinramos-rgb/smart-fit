@@ -30,9 +30,8 @@
             overflow-x: hidden; transition: max-width 0.3s ease;
         }
 
-        /* Clase para expandir el cuerpo cuando estamos en el panel de admin */
         body.admin-mode {
-            max-width: 950px !important;
+            max-width: 1100px !important;
             background-color: #F8FAFC !important;
         }
 
@@ -76,18 +75,21 @@
 
         /* Panel Admin Amplio (Desktop Friendly) */
         #adminPanel { display: none; padding: 30px; min-height: 100vh; position: absolute; width: 100%; z-index: 1500; top: 0; left: 0;}
-        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        @media(max-width: 768px) { .admin-grid { grid-template-columns: 1fr; } }
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        @media(max-width: 1024px) { .admin-grid { grid-template-columns: 1fr; } }
         
-        .admin-card { background: var(--surface); border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow); margin-bottom: 20px;}
-        .admin-card h3 { font-size: 18px; font-weight: 900; color: var(--primary); margin-bottom: 16px; }
+        .admin-card { background: var(--surface); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow); margin-bottom: 20px;}
+        .admin-card h3 { font-size: 17px; font-weight: 900; color: var(--primary); margin-bottom: 16px; }
         
         .member-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .member-table th { background: #FFF5F5; color: var(--primary); font-size: 12px; text-transform: uppercase; padding: 10px; text-align: left; font-weight: 900; border-bottom: 2px solid #FFD6D6; }
-        .member-table td { padding: 12px 10px; font-size: 14px; font-weight: 700; border-bottom: 1px solid #F1F5F9; color: var(--text-main); }
-        .member-select { padding: 6px 10px; border-radius: 10px; border: 2px solid #FFD6D6; font-weight: 800; color: var(--primary); background: #FFF5F5; outline: none; font-size: 13px;}
+        .member-table th { background: #FFF5F5; color: var(--primary); font-size: 11px; text-transform: uppercase; padding: 10px; text-align: left; font-weight: 900; border-bottom: 2px solid #FFD6D6; }
+        .member-table td { padding: 10px; font-size: 13px; font-weight: 700; border-bottom: 1px solid #F1F5F9; color: var(--text-main); }
+        .member-select { padding: 4px 8px; border-radius: 8px; border: 2px solid #FFD6D6; font-weight: 800; color: var(--primary); background: #FFF5F5; outline: none; font-size: 12px;}
 
-        .btn-excel-admin { background: #E3F2FD; color: #1976D2; border: none; padding: 12px 18px; border-radius: 14px; font-weight: 900; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; margin-right: 10px; margin-bottom: 10px;}
+        .btn-action { background: #F0F4FF; border: none; color: #3B82F6; padding: 6px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-right: 4px;}
+        .btn-action.del { background: #FFF0F0; color: #EF4444; }
+
+        .btn-excel-admin { background: #E3F2FD; color: #1976D2; border: none; padding: 10px 14px; border-radius: 12px; font-weight: 900; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; margin-right: 6px; margin-bottom: 8px; width: 100%; text-align: center; justify-content: center;}
         .btn-excel-admin.up { background: #E8F5E9; color: #388E3C; }
 
         /* App Core Socio */
@@ -169,56 +171,74 @@
         <button class="admin-login-link" onclick="openAdminPanel()">🔐 Acceso Recepción / Dueño (Panel Admin)</button>
     </div>
 
-    <!-- PANEL ADMIN ANCHO (DESKTOP FRIENDLY) -->
+    <!-- PANEL ADMIN ANCHO (3 COLUMNAS DESKTOP) -->
     <div id="adminPanel">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; background: white; padding: 20px 30px; border-radius: 20px; box-shadow: var(--shadow);">
             <div>
                 <h2 style="color: var(--primary); font-weight: 900; font-size: 24px;">🏢 Panel General del Gimnasio</h2>
-                <p style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Gestión de socios, fichas médicas y asignación masiva de niveles.</p>
+                <p style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Gestión completa de socios, fichas médicas y carga masiva de rutinas por niveles.</p>
             </div>
             <button class="back-btn" onclick="closeAdminPanel()">← Volver al Sistema</button>
         </div>
 
         <div class="admin-grid">
-            <!-- COLUMNA 1: GESTIÓN DE SOCIOS Y NIVELES -->
+            <!-- COLUMNA 1: PADRÓN DE SOCIOS (CON EDICIÓN Y ELIMINACIÓN) -->
             <div class="admin-card">
                 <h3>👥 Padrón de Socios y Niveles</h3>
-                <div style="overflow-x: auto;">
+                <div style="overflow-x: auto; max-height: 400px; overflow-y: auto;">
                     <table class="member-table">
                         <thead>
                             <tr>
                                 <th>Socio</th>
-                                <th>DNI / Ficha</th>
-                                <th>Nivel Plan</th>
+                                <th>DNI</th>
+                                <th>Plan</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="memberTableBody"></tbody>
                     </table>
                 </div>
 
-                <div style="margin-top: 24px; border-top: 2px dashed #FFE0E0; padding-top: 20px;">
-                    <h3 style="font-size:15px; margin-bottom: 12px;">➕ Dar de alta socio individual</h3>
-                    <input type="text" id="newMemberName" class="dni-input" placeholder="Nombre y Apellido" style="font-size: 14px; padding: 12px; margin-bottom: 8px; text-align: left;">
-                    <input type="number" id="newMemberDni" class="dni-input" placeholder="DNI del Socio" style="font-size: 14px; padding: 12px; margin-bottom: 12px; text-align: left;">
-                    <button class="btn-login" style="padding: 12px; font-size: 14px;" onclick="addNewMember()">Registrar Socio Manualmente 📝</button>
+                <div style="margin-top: 20px; border-top: 2px dashed #FFE0E0; padding-top: 16px;">
+                    <h3 style="font-size:14px; margin-bottom: 8px;">➕ Alta manual de socio</h3>
+                    <input type="text" id="newMemberName" class="dni-input" placeholder="Nombre y Apellido" style="font-size: 13px; padding: 10px; margin-bottom: 6px; text-align: left;">
+                    <input type="number" id="newMemberDni" class="dni-input" placeholder="DNI del Socio" style="font-size: 13px; padding: 10px; margin-bottom: 8px; text-align: left;">
+                    <button class="btn-login" style="padding: 10px; font-size: 13px;" onclick="addNewMember()">Registrar Socio 📝</button>
                 </div>
             </div>
 
-            <!-- COLUMNA 2: IMPORTACIÓN MASIVA EXCEL (FICHA MÉDICA Y SOCIOS) -->
+            <!-- COLUMNA 2: IMPORTACIÓN DE SOCIOS & FICHA MÉDICA -->
             <div class="admin-card">
-                <h3>📊 Importación Masiva por Excel (Ficha Médica)</h3>
-                <p style="font-size: 13px; color: var(--text-muted); font-weight: 600; margin-bottom: 16px;">
-                    Cargá todos los datos de los socios de golpe (incluyendo grupo sanguíneo, emergencias y patologías médicas relevadas en la inscripción).
+                <h3>📊 Importación de Socios (Excel)</h3>
+                <p style="font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 12px;">
+                    Cargá la base de datos completa con datos médicos y de emergencia relevados en la inscripción.
                 </p>
-                
-                <button class="btn-excel-admin" onclick="downloadSociosTemplate()">📥 Descargar Plantilla Excel</button>
+                <button class="btn-excel-admin" onclick="downloadSociosTemplate()">📥 Descargar Plantilla Socios</button>
                 <button class="btn-excel-admin up" onclick="document.getElementById('excelSociosInput').click()">⬆️ Subir Excel de Socios</button>
                 <input type="file" id="excelSociosInput" accept=".xlsx" style="display:none;" onchange="importSociosExcel(event)">
 
-                <div style="margin-top: 24px; background: #FFF9F9; border: 2px solid #FFD6D6; border-radius: 16px; padding: 16px;">
-                    <strong style="font-size: 13px; color: var(--primary); display: block; margin-bottom: 4px;">ℹ️ Nota legal para el gimnasio:</strong>
-                    <p style="font-size: 12px; color: var(--text-main); font-weight: 600;">
-                        La planilla procesa automáticamente campos de Declaración Jurada (Alergias, Operaciones, Contacto de Emergencia y Grupo Sanguíneo) para cumplir con las normativas de seguro del establecimiento.
+                <div style="margin-top: 16px; background: #FFF9F9; border: 2px solid #FFD6D6; border-radius: 12px; padding: 12px;">
+                    <strong style="font-size: 12px; color: var(--primary); display: block; margin-bottom: 2px;">ℹ️ Declaración Jurada:</strong>
+                    <p style="font-size: 11px; color: var(--text-main); font-weight: 600;">
+                        Procesa grupos sanguíneos y contactos de emergencia automáticamente para el seguro del gimnasio.
+                    </p>
+                </div>
+            </div>
+
+            <!-- COLUMNA 3: GESTIÓN Y SUBIDA DE RUTINAS MASTER POR NIVEL -->
+            <div class="admin-card">
+                <h3>🏋️‍♂️ Subida de Rutinas por Nivel</h3>
+                <p style="font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 12px;">
+                    Actualizá los ejercicios de los Niveles 1, 2, 3 o 4 subiendo la planilla correspondiente.
+                </p>
+                <button class="btn-excel-admin" onclick="downloadRutinaTemplate()">📥 Plantilla Rutinas Master</button>
+                <button class="btn-excel-admin up" onclick="document.getElementById('excelRutinaInput').click()">⬆️ Subir Planilla de Rutinas</button>
+                <input type="file" id="excelRutinaInput" accept=".xlsx" style="display:none;" onchange="importRutinasExcel(event)">
+
+                <div style="margin-top: 16px; background: #E3F2FD; border: 2px solid #90CAF9; border-radius: 12px; padding: 12px;">
+                    <strong style="font-size: 12px; color: #1976D2; display: block; margin-bottom: 2px;">💡 Automatización B2B:</strong>
+                    <p style="font-size: 11px; color: #0D47A1; font-weight: 600;">
+                        Al subir este Excel, todos los socios asignados a ese nivel actualizan su rutina instantáneamente en sus celulares.
                     </p>
                 </div>
             </div>
@@ -250,7 +270,7 @@
 
                 <div class="sales-box">
                     <h3>¿Te interesa este software para tu gym? 💼</h3>
-                    <p>Ideal para automatizar fichas médicas por DNI y gestión completa de socios.</p>
+                    <p>Ideal para automatizar fichas médicas, control de socios y rutinas masivas por DNI.</p>
                     <button class="btn-buy" onclick="alert('¡Contactá al desarrollador para adquirir tu licencia comercial corporativa!')">💬 Cotizar Licencia B2B</button>
                 </div>
             </div>
@@ -269,14 +289,15 @@
     </div>
 
     <script>
-        // Base de datos de socios enriquecida con Ficha Médica
+        // Base de datos de socios
         let gymDatabase = {
             "35444555": { name: "Carlos Pérez", level: 1, grupoSanguineo: "O+", emergencia: "María Pérez (11-4455-6677)", observaciones: "Ninguna" },
-            "28999888": { name: "Lucía Gómez", level: 2, grupoSanguineo: "A+", emergencia: "Juan Gómez (11-9988-7766)", observaciones: "Operación de rodilla 2024" },
+            "28999888": { name: "Lucía Gómez", level: 2, grupoSanguineo: "A+", emergencia: "Juan Gómez (11-9988-7766)", observaciones: "Operación de rodilla" },
             "40111222": { name: "Marcos Maidana", level: 3, grupoSanguineo: "B+", emergencia: "Ana Maidana (11-1234-5678)", observaciones: "Asmático leve" }
         };
 
-        const rutinasPorNivel = {
+        // Rutinas organizadas por Nivel
+        let rutinasPorNivel = {
             1: { title: "Nivel 1 - Principiante", ejercicios: [
                 { muscle: "Piernas", name: "Prensa a 45°", reps: "4 x 10", img: "https://images.unsplash.com/photo-1434682881908-b43d0467b798?w=200&q=80" },
                 { muscle: "Tríceps", name: "Tirones en Polea", reps: "4 x 10", img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=200&q=80" }
@@ -353,7 +374,7 @@
                     <tr>
                         <td>
                             <strong>${soc.name}</strong><br>
-                            <span style="font-size:11px; color:var(--text-muted);">Sangre: ${soc.grupoSanguineo} | Emergencia: ${soc.emergencia}</span>
+                            <span style="font-size:10px; color:var(--text-muted);">Sangre: ${soc.grupoSanguineo}</span>
                         </td>
                         <td>${dni}</td>
                         <td>
@@ -364,6 +385,10 @@
                                 <option value="4" ${soc.level==4?'selected':''}>Nivel 4</option>
                             </select>
                         </td>
+                        <td>
+                            <button class="btn-action" onclick="editSocio('${dni}')">✏️</button>
+                            <button class="btn-action del" onclick="deleteSocio('${dni}')">🗑️</button>
+                        </td>
                     </tr>
                 `;
             }).join('');
@@ -371,6 +396,24 @@
 
         function updateSocioLevel(dni, newLevel) {
             gymDatabase[dni].level = parseInt(newLevel);
+        }
+
+        function editSocio(dni) {
+            const soc = gymDatabase[dni];
+            const newName = prompt("Modificar Nombre y Apellido:", soc.name);
+            if(newName) {
+                soc.name = newName;
+                renderAdminMembers();
+                alert("¡Socio modificado con éxito!");
+            }
+        }
+
+        function deleteSocio(dni) {
+            if(confirm(`¿Estás segura que querés eliminar al socio con DNI ${dni}?`)) {
+                delete gymDatabase[dni];
+                renderAdminMembers();
+                alert("Socio eliminado del padrón.");
+            }
         }
 
         function addNewMember() {
@@ -386,12 +429,10 @@
         }
 
         function downloadSociosTemplate() {
-            let data = [
-                { DNI: "35444555", "Nombre y Apellido": "Carlos Pérez", Nivel: 1, "Grupo Sanguineo": "O+", "Contacto Emergencia": "María (11445566)", Patologias: "Ninguna" }
-            ];
+            let data = [{ DNI: "35444555", "Nombre y Apellido": "Carlos Pérez", Nivel: 1, "Grupo Sanguineo": "O+", "Contacto Emergencia": "María (11445566)", Patologias: "Ninguna" }];
             const ws = XLSX.utils.json_to_sheet(data);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Socios_FichaMedica");
+            XLSX.utils.book_append_sheet(wb, ws, "Socios");
             XLSX.writeFile(wb, `Plantilla_Socios_Gym.xlsx`);
         }
 
@@ -403,24 +444,60 @@
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, {type: 'array'});
                 const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-                
                 let count = 0;
                 json.forEach(row => {
-                    const dni = String(row.DNI || row.dni || "").trim();
-                    const nombre = row["Nombre y Apellido"] || row.Nombre || "Sin Nombre";
+                    const dni = String(row.DNI || "").trim();
+                    const nombre = row["Nombre y Apellido"] || "Sin Nombre";
                     const nivel = parseInt(row.Nivel) || 1;
-                    const sangre = row["Grupo Sanguineo"] || "N/D";
-                    const emerg = row["Contacto Emergencia"] || "N/D";
-                    const pato = row.Patologias || "Ninguna";
-
                     if(dni) {
-                        gymDatabase[dni] = { name: nombre, level: nivel, grupoSanguineo: sangre, emergencia: emerg, observaciones: pato };
+                        gymDatabase[dni] = { name: nombre, level: nivel, grupoSanguineo: row["Grupo Sanguineo"]||"N/D", emergencia: row["Contacto Emergencia"]||"N/D", observaciones: row.Patologias||"Ninguna" };
                         count++;
                     }
                 });
-
                 renderAdminMembers();
-                alert(`¡Se importaron ${count} socios con sus fichas médicas con éxito! 📊🚀`);
+                alert(`¡Se importaron ${count} socios con éxito! 📊`);
+            };
+            reader.readAsArrayBuffer(file);
+            event.target.value = '';
+        }
+
+        function downloadRutinaTemplate() {
+            let data = [{ Nivel: 1, TituloNivel: "Principiante", Musculo: "Piernas", Ejercicio: "Prensa a 45", Repeticiones: "4 x 10" }];
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "RutinasMaster");
+            XLSX.writeFile(wb, `Plantilla_Rutinas_Master.xlsx`);
+        }
+
+        function importRutinasExcel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+                
+                let tempRutinas = {};
+                json.forEach(row => {
+                    const lev = parseInt(row.Nivel) || 1;
+                    if(!tempRutinas[lev]) {
+                        tempRutinas[lev] = { title: row.TituloNivel || `Nivel ${lev}`, ejercicios: [] };
+                    }
+                    tempRutinas[lev].ejercicios.push({
+                        muscle: row.Musculo || "General",
+                        name: row.Ejercicio || "Ejercicio",
+                        reps: row.Repeticiones || "4 x 10",
+                        img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=200&q=80"
+                    });
+                });
+
+                if(Object.keys(tempRutinas).length > 0) {
+                    rutinasPorNivel = tempRutinas;
+                    alert("¡Rutinas Master actualizadas por Excel con éxito! 🚀");
+                } else {
+                    alert("No se encontraron datos válidos en el Excel.");
+                }
             };
             reader.readAsArrayBuffer(file);
             event.target.value = '';
