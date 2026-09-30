@@ -33,7 +33,7 @@
         }
 
         body.admin-mode {
-            max-width: 1100px !important;
+            max-width: 1150px !important;
             background-color: #090D16 !important;
         }
 
@@ -75,9 +75,9 @@
             font-size: 13px; font-weight: 800; cursor: pointer; text-decoration: underline;
         }
 
-        /* Panel Admin Amplio (Desktop Friendly) */
+        /* Panel Admin Amplio */
         #adminPanel { display: none; padding: 30px; min-height: 100vh; position: absolute; width: 100%; z-index: 1500; top: 0; left: 0;}
-        .admin-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .admin-grid { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 20px; }
         @media(max-width: 1024px) { .admin-grid { grid-template-columns: 1fr; } }
         
         .admin-card { background: var(--surface); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow); margin-bottom: 20px; border: 1px solid var(--border);}
@@ -85,14 +85,27 @@
         
         .member-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         .member-table th { background: #0F172A; color: var(--primary); font-size: 11px; text-transform: uppercase; padding: 10px; text-align: left; font-weight: 900; border-bottom: 2px solid var(--border); }
-        .member-table td { padding: 10px; font-size: 13px; font-weight: 700; border-bottom: 1px solid var(--border); color: var(--text-main); }
-        .member-select { padding: 4px 8px; border-radius: 8px; border: 2px solid var(--border); font-weight: 800; color: var(--primary); background: #0F172A; outline: none; font-size: 12px;}
+        .member-table td { padding: 10px; font-size: 12px; font-weight: 700; border-bottom: 1px solid var(--border); color: var(--text-main); }
+        .member-select { padding: 4px 6px; border-radius: 6px; border: 2px solid var(--border); font-weight: 800; color: var(--primary); background: #0F172A; outline: none; font-size: 11px;}
 
-        .btn-action { background: #334155; border: none; color: var(--primary); padding: 6px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-right: 4px;}
+        .badge-status { padding: 4px 8px; border-radius: 99px; font-size: 10px; font-weight: 900; text-transform: uppercase; display: inline-block;}
+        .badge-status.ok { background: #064E3B; color: #34D399; }
+        .badge-status.warn { background: #451A03; color: #F87171; }
+
+        .btn-action { background: #334155; border: none; color: var(--primary); padding: 6px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-right: 2px;}
         .btn-action.del { background: #451A03; color: #F87171; }
 
         .btn-excel-admin { background: #1E293B; color: var(--primary); border: 2px solid var(--border); padding: 10px 14px; border-radius: 12px; font-weight: 900; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; margin-right: 6px; margin-bottom: 8px; width: 100%; text-align: center; justify-content: center;}
         .btn-excel-admin.up { background: #064E3B; color: #34D399; border-color: #065F46; }
+
+        /* Alerta de Vencimiento Socio */
+        .fee-alert-box {
+            background: #451A03; border: 2px solid #F87171; color: #FEE2E2; padding: 16px; border-radius: 16px;
+            margin: 20px; text-align: center; font-weight: 800; font-size: 14px; box-shadow: var(--shadow);
+            display: none;
+        }
+        .fee-alert-box.active { display: block; animation: pulseAlert 2s infinite; }
+        @keyframes pulseAlert { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
         /* App Core Socio */
         .app-view { display: none; animation: fadeIn 0.4s ease; }
@@ -173,26 +186,26 @@
         <button class="admin-login-link" onclick="openAdminPanel()">🔐 Acceso Recepción / Dueño (Panel Admin)</button>
     </div>
 
-    <!-- PANEL ADMIN ANCHO (3 COLUMNAS DESKTOP) -->
+    <!-- PANEL ADMIN AMPLIO -->
     <div id="adminPanel">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; background: var(--surface); padding: 20px 30px; border-radius: 20px; box-shadow: var(--shadow); border: 1px solid var(--border);">
             <div>
                 <h2 style="color: var(--primary); font-weight: 900; font-size: 24px;">🏢 Panel General del Gimnasio</h2>
-                <p style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Gestión completa de socios, fichas médicas y carga masiva de rutinas por niveles.</p>
+                <p style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Control de cuotas, padrón de socios y rutinas master.</p>
             </div>
             <button class="back-btn" onclick="closeAdminPanel()">← Volver al Sistema</button>
         </div>
 
         <div class="admin-grid">
-            <!-- COLUMNA 1: PADRÓN DE SOCIOS (CON EDICIÓN Y ELIMINACIÓN) -->
+            <!-- COLUMNA 1: PADRÓN Y ESTADO DE CUOTAS -->
             <div class="admin-card">
-                <h3>👥 Padrón de Socios y Niveles</h3>
+                <h3>👥 Padrón y Estado de Cuotas</h3>
                 <div style="overflow-x: auto; max-height: 400px; overflow-y: auto;">
                     <table class="member-table">
                         <thead>
                             <tr>
                                 <th>Socio</th>
-                                <th>DNI</th>
+                                <th>Vencimiento</th>
                                 <th>Plan</th>
                                 <th>Acciones</th>
                             </tr>
@@ -204,30 +217,31 @@
                 <div style="margin-top: 20px; border-top: 2px dashed var(--border); padding-top: 16px;">
                     <h3 style="font-size:14px; margin-bottom: 8px;">➕ Alta manual de socio</h3>
                     <input type="text" id="newMemberName" class="dni-input" placeholder="Nombre y Apellido" style="font-size: 13px; padding: 10px; margin-bottom: 6px; text-align: left;">
-                    <input type="number" id="newMemberDni" class="dni-input" placeholder="DNI del Socio" style="font-size: 13px; padding: 10px; margin-bottom: 8px; text-align: left;">
+                    <input type="number" id="newMemberDni" class="dni-input" placeholder="DNI del Socio" style="font-size: 13px; padding: 10px; margin-bottom: 6px; text-align: left;">
+                    <input type="date" id="newMemberVenc" class="dni-input" style="font-size: 13px; padding: 10px; margin-bottom: 8px; text-align: left;">
                     <button class="btn-login" style="padding: 10px; font-size: 13px;" onclick="addNewMember()">Registrar Socio 📝</button>
                 </div>
             </div>
 
-            <!-- COLUMNA 2: IMPORTACIÓN DE SOCIOS & FICHA MÉDICA -->
+            <!-- COLUMNA 2: IMPORTACIÓN DE SOCIOS -->
             <div class="admin-card">
                 <h3>📊 Importación de Socios (Excel)</h3>
                 <p style="font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 12px;">
-                    Cargá la base de datos completa con datos médicos y de emergencia relevados en la inscripción.
+                    Cargá la base de datos completa con fecha de vencimiento de cuota y ficha médica.
                 </p>
                 <button class="btn-excel-admin" onclick="downloadSociosTemplate()">📥 Descargar Plantilla Socios</button>
                 <button class="btn-excel-admin up" onclick="document.getElementById('excelSociosInput').click()">⬆️ Subir Excel de Socios</button>
                 <input type="file" id="excelSociosInput" accept=".xlsx" style="display:none;" onchange="importSociosExcel(event)">
 
                 <div style="margin-top: 16px; background: #1E293B; border: 2px solid var(--border); border-radius: 12px; padding: 12px;">
-                    <strong style="font-size: 12px; color: var(--primary); display: block; margin-bottom: 2px;">ℹ️ Declaración Jurada:</strong>
+                    <strong style="font-size: 12px; color: var(--primary); display: block; margin-bottom: 2px;">ℹ️ Aviso Automático:</strong>
                     <p style="font-size: 11px; color: var(--text-muted); font-weight: 600;">
-                        Procesa grupos sanguíneos y contactos de emergencia automáticamente para el seguro del gimnasio.
+                        El sistema valida la fecha de vencimiento y avisa al socio en pantalla si su cuota caduca en menos de 3 días.
                     </p>
                 </div>
             </div>
 
-            <!-- COLUMNA 3: GESTIÓN Y SUBIDA DE RUTINAS MASTER POR NIVEL -->
+            <!-- COLUMNA 3: RUTINAS MASTER -->
             <div class="admin-card">
                 <h3>🏋️‍♂️ Subida de Rutinas por Nivel</h3>
                 <p style="font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 12px;">
@@ -240,7 +254,7 @@
                 <div style="margin-top: 16px; background: #0F172A; border: 2px solid var(--border); border-radius: 12px; padding: 12px;">
                     <strong style="font-size: 12px; color: var(--primary); display: block; margin-bottom: 2px;">💡 Automatización B2B:</strong>
                     <p style="font-size: 11px; color: var(--text-muted); font-weight: 600;">
-                        Al subir este Excel, todos los socios asignados a ese nivel actualizan su rutina instantáneamente en sus celulares.
+                        Al subir este Excel, los socios actualizan su rutina instantáneamente.
                     </p>
                 </div>
             </div>
@@ -260,6 +274,11 @@
             <button class="back-btn" style="padding: 6px 12px; font-size: 12px;" onclick="logout()">Cambiar Socio</button>
         </div>
 
+        <!-- Alerta de Vencimiento de Cuota -->
+        <div class="fee-alert-box" id="feeAlertBox">
+            ⚠️️ <strong>¡Atención!</strong> Tu cuota vence el <span id="alertDateTxt">--/--/----</span>. Por favor aboná en recepción para evitar la suspensión del acceso.
+        </div>
+
         <!-- TAB RUTINA -->
         <div id="tabRutina" class="app-view active">
             <div id="homeView">
@@ -272,7 +291,7 @@
 
                 <div class="sales-box">
                     <h3>¿Te interesa este software para tu gym? 💼</h3>
-                    <p>Ideal para automatizar fichas médicas, control de socios y rutinas masivas por DNI.</p>
+                    <p>Ideal para automatizar fichas médicas, control de cuotas y rutinas masivas por DNI.</p>
                     <button class="btn-buy" onclick="alert('¡Contactá al desarrollador para adquirir tu licencia comercial corporativa!')">💬 Cotizar Licencia B2B</button>
                 </div>
             </div>
@@ -291,10 +310,11 @@
     </div>
 
     <script>
+        // Fecha actual simulada o real para calcular vencimientos (ej: 2026-10-15)
         let gymDatabase = {
-            "35444555": { name: "Carlos Pérez", level: 1, grupoSanguineo: "O+", emergencia: "María Pérez (11-4455-6677)", observaciones: "Ninguna" },
-            "28999888": { name: "Lucía Gómez", level: 2, grupoSanguineo: "A+", emergencia: "Juan Gómez (11-9988-7766)", observaciones: "Operación de rodilla" },
-            "40111222": { name: "Marcos Maidana", level: 3, grupoSanguineo: "B+", emergencia: "Ana Maidana (11-1234-5678)", observaciones: "Asmático leve" }
+            "35444555": { name: "Carlos Pérez", level: 1, vencimiento: "2026-10-02", grupoSanguineo: "O+" },
+            "28999888": { name: "Lucía Gómez", level: 2, vencimiento: "2026-11-15", grupoSanguineo: "A+" },
+            "40111222": { name: "Marcos Maidana", level: 3, vencimiento: "2026-10-01", grupoSanguineo: "B+" }
         };
 
         let rutinasPorNivel = {
@@ -326,7 +346,8 @@
             } else {
                 const name = prompt("DNI no registrado. Ingresá el Nombre y Apellido del socio:");
                 if(name) {
-                    gymDatabase[dni] = { name: name, level: 1, grupoSanguineo: "N/D", emergencia: "N/D", observaciones: "Ninguna" };
+                    const today = new Date().toISOString().split('T')[0];
+                    gymDatabase[dni] = { name: name, level: 1, vencimiento: today, grupoSanguineo: "N/D" };
                     currentSocio = { dni, ...gymDatabase[dni] };
                     startAppForSocio();
                 }
@@ -338,7 +359,27 @@
             document.getElementById('mainApp').style.display = 'block';
             document.getElementById('userNameHeader').textContent = currentSocio.name;
             document.getElementById('userLevelBadge').textContent = `PLAN NIVEL ${currentSocio.level}`;
+
+            // Validar vencimiento (avisa si quedan 3 días o menos o está vencido)
+            checkFeeExpiration(currentSocio.vencimiento);
             goHome();
+        }
+
+        function checkFeeExpiration(vencStr) {
+            const alertBox = document.getElementById('feeAlertBox');
+            const alertTxt = document.getElementById('alertDateTxt');
+            
+            const today = new Date();
+            const vencDate = new Date(vencStr);
+            const diffTime = vencDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays <= 3) {
+                alertTxt.textContent = vencStr.split('-').reverse().join('/');
+                alertBox.classList.add('active');
+            } else {
+                alertBox.classList.remove('active');
+            }
         }
 
         function logout() {
@@ -368,15 +409,25 @@
 
         function renderAdminMembers() {
             const tbody = document.getElementById('memberTableBody');
+            const today = new Date();
+
             tbody.innerHTML = Object.keys(gymDatabase).map(dni => {
                 const soc = gymDatabase[dni];
+                const vencDate = new Date(soc.vencimiento);
+                const isExpired = vencDate < today;
+                const statusBadge = isExpired ? 
+                    `<span class="badge-status warn">Vencido</span>` : 
+                    `<span class="badge-status ok">Al día</span>`;
+
                 return `
                     <tr>
                         <td>
                             <strong>${soc.name}</strong><br>
-                            <span style="font-size:10px; color:var(--text-muted);">Sangre: ${soc.grupoSanguineo}</span>
+                            <span style="font-size:10px; color:var(--text-muted);">DNI: ${dni}</span>
                         </td>
-                        <td>${dni}</td>
+                        <td>
+                            ${soc.vencimiento} <br> ${statusBadge}
+                        </td>
                         <td>
                             <select class="member-select" onchange="updateSocioLevel('${dni}', this.value)">
                                 <option value="1" ${soc.level==1?'selected':''}>Nivel 1</option>
@@ -386,8 +437,8 @@
                             </select>
                         </td>
                         <td>
-                            <button class="btn-action" onclick="editSocio('${dni}')">✏️</button>
-                            <button class="btn-action del" onclick="deleteSocio('${dni}')">🗑️️</button>
+                            <button class="btn-action" onclick="renewFee('${dni}')" title="Renovar Mes">💵</button>
+                            <button class="btn-action del" onclick="deleteSocio('${dni}')" title="Eliminar">🗑️</button>
                         </td>
                     </tr>
                 `;
@@ -398,14 +449,12 @@
             gymDatabase[dni].level = parseInt(newLevel);
         }
 
-        function editSocio(dni) {
-            const soc = gymDatabase[dni];
-            const newName = prompt("Modificar Nombre y Apellido:", soc.name);
-            if(newName) {
-                soc.name = newName;
-                renderAdminMembers();
-                alert("¡Socio modificado con éxito!");
-            }
+        function renewFee(dni) {
+            const currentVenc = new Date(gymDatabase[dni].vencimiento);
+            currentVenc.setMonth(currentVenc.getMonth() + 1);
+            gymDatabase[dni].vencimiento = currentVenc.toISOString().split('T')[0];
+            renderAdminMembers();
+            alert(`¡Cuota renovada por 30 días para ${gymDatabase[dni].name}! 💵✨`);
         }
 
         function deleteSocio(dni) {
@@ -419,17 +468,19 @@
         function addNewMember() {
             const name = document.getElementById('newMemberName').value.trim();
             const dni = document.getElementById('newMemberDni').value.trim();
-            if(!name || !dni) return alert("Completá ambos campos.");
+            const venc = document.getElementById('newMemberVenc').value;
+            if(!name || !dni || !venc) return alert("Completá todos los campos.");
             
-            gymDatabase[dni] = { name: name, level: 1, grupoSanguineo: "S/D", emergencia: "S/D", observaciones: "S/D" };
+            gymDatabase[dni] = { name: name, level: 1, vencimiento: venc, grupoSanguineo: "S/D" };
             document.getElementById('newMemberName').value = '';
             document.getElementById('newMemberDni').value = '';
+            document.getElementById('newMemberVenc').value = '';
             renderAdminMembers();
             alert("¡Socio registrado con éxito!");
         }
 
         function downloadSociosTemplate() {
-            let data = [{ DNI: "35444555", "Nombre y Apellido": "Carlos Pérez", Nivel: 1, "Grupo Sanguineo": "O+", "Contacto Emergencia": "María (11445566)", Patologias: "Ninguna" }];
+            let data = [{ DNI: "35444555", "Nombre y Apellido": "Carlos Pérez", Nivel: 1, Vencimiento: "2026-11-01", "Grupo Sanguineo": "O+" }];
             const ws = XLSX.utils.json_to_sheet(data);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Socios");
@@ -449,13 +500,14 @@
                     const dni = String(row.DNI || "").trim();
                     const nombre = row["Nombre y Apellido"] || "Sin Nombre";
                     const nivel = parseInt(row.Nivel) || 1;
+                    const venc = row.Vencimiento || new Date().toISOString().split('T')[0];
                     if(dni) {
-                        gymDatabase[dni] = { name: nombre, level: nivel, grupoSanguineo: row["Grupo Sanguineo"]||"N/D", emergencia: row["Contacto Emergencia"]||"N/D", observaciones: row.Patologias||"Ninguna" };
+                        gymDatabase[dni] = { name: nombre, level: nivel, vencimiento: venc, grupoSanguineo: row["Grupo Sanguineo"]||"N/D" };
                         count++;
                     }
                 });
                 renderAdminMembers();
-                alert(`¡Se importaron ${count} socios con éxito! 📊`);
+                alert(`¡Se importaron ${count} socios con sus vencimientos! 📊`);
             };
             reader.readAsArrayBuffer(file);
             event.target.value = '';
